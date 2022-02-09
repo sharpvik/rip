@@ -6,10 +6,12 @@ designed to be used for microservices and cloud functions.
 ## Request
 
 ```
-54 /url/path/to/specify/function/to/call {"hello":"world"}
- ^ ^                                   ^ ^               ^
- | |                                   | |               |
- | *----- URL -------------------------* *----- ARG -----*
+54 Greet {"hello":"world"}
+ ^   ^   ^               ^
+ |   |   |               |
+ |   |   *----- ARG -----*
+ |   |
+ |   *-- FUNCTION NAME
  |
  *----- CONTENT LENGTH
 ```

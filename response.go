@@ -24,13 +24,6 @@ func ResponseJSON(v interface{}) (resp *Response, err error) {
 	return
 }
 
-func ResponseString(s string) *Response {
-	return &Response{
-		Len:  len(s),
-		Body: []byte(s),
-	}
-}
-
 func (resp *Response) Bytes() []byte {
 	contentLength := []byte(strconv.Itoa(resp.Len) + " ")
 	return append(contentLength, resp.Body...)
