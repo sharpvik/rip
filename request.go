@@ -5,31 +5,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"path"
-	"strings"
 )
 
 type Request struct {
-	URL []string
-	Arg []byte
+	FuncName string
+	Argument []byte
 }
 
-func NewRequest(url string, argument interface{}) (r *Request, err error) {
+func NewRequest(funcName string, argument interface{}) (r *Request, err error) {
 	arg, err := json.Marshal(argument)
 	if err != nil {
 		return nil, ErrBadArgMarshal
 	}
 	r = &Request{
-		URL: strings.Split(url, "/"),
-		Arg: arg,
+		FuncName: funcName,
+		Argument: arg,
 	}
 	return
 }
 
 func (req *Request) String() string {
-	url := path.Join(req.URL...)
-	bodySize := len(url) + 1 + len(req.Arg)
-	return fmt.Sprintf("%d %s %s", bodySize, url, req.Arg)
+	bodySize := len(req.FuncName) + 1 + len(req.Argument)
+	return fmt.Sprintf("%d %s %s", bodySize, req.FuncName, req.Argument)
 }
 
 func (req *Request) Bytes() []byte {
@@ -54,12 +51,12 @@ func ReadRequest(rd io.Reader) (req *Request, err error) {
 		return
 	}
 
-	urlLength, url, err := readURL(bufr)
+	funcNameLength, funcName, err := readFuncName(bufr)
 	if err != nil {
 		return
 	}
 
-	argLength, err := calculateArgLength(contentLength, urlLength)
+	argLength, err := calculateArgLength(contentLength, funcNameLength)
 	if err != nil {
 		return
 	}
@@ -70,8 +67,8 @@ func ReadRequest(rd io.Reader) (req *Request, err error) {
 	}
 
 	req = &Request{
-		URL: url,
-		Arg: arg,
+		FuncName: funcName,
+		Argument: arg,
 	}
 	return
 }

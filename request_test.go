@@ -9,12 +9,12 @@ import (
 
 func TestRequestReader(t *testing.T) {
 	input := &Request{
-		URL: strings.Split("url/path/to/specify/function/to/call", "/"),
-		Arg: []byte(`{"hello": "world"}`),
+		FuncName: "greet",
+		Argument: []byte(`{"hello": "world"}`),
 	}
 
 	output, err := ReadRequest(strings.NewReader(input.String()))
 	assert.NoError(t, err)
-	assert.Equal(t, input.URL, output.URL)
-	assert.Equal(t, input.Arg, output.Arg)
+	assert.Equal(t, input.FuncName, output.FuncName)
+	assert.Equal(t, input.Argument, output.Argument)
 }

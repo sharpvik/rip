@@ -19,20 +19,23 @@ func readContentLength(bufr *bufio.Reader) (contentLength int, err error) {
 	return
 }
 
-func readURL(bufr *bufio.Reader) (length int, url []string, err error) {
+func readFuncName(bufr *bufio.Reader) (length int, name string, err error) {
 	withSpace, err := bufr.ReadString(' ')
 	if err != nil {
 		err = ErrBadURLRead
 		return
 	}
 	length = len(withSpace)
-	url = strings.Split(strings.TrimSpace(withSpace), "/")
+	name = strings.TrimSpace(withSpace)
 	return
 }
 
-func calculateArgLength(contentLength int, urlLength int) (n int, err error) {
-	n = contentLength - urlLength
-	if n < 0 {
+func calculateArgLength(
+	contentLength int,
+	funcNameLength int,
+) (length int, err error) {
+	length = contentLength - funcNameLength
+	if length < 0 {
 		err = ErrInvalidContentLength
 	}
 	return
