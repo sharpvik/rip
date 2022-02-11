@@ -6,7 +6,7 @@ designed to be used for microservices and cloud functions.
 ## Request
 
 ```
-54 Greet {"hello":"world"}
+23 Greet {"hello":"world"}
  ^   ^   ^               ^
  |   |   |               |
  |   |   *----- ARG -----*
