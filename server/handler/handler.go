@@ -6,31 +6,26 @@ import (
 	"github.com/sharpvik/rfip"
 )
 
-type Handler interface {
-	Greet(string) string
+type Handler struct{}
+
+func New() *Handler {
+	return new(Handler)
 }
 
-type handler struct{}
-
-func New() Handler {
-	return new(handler)
-}
-
-func (h *handler) Greet(name string) string {
+func (h *Handler) Greet(name string) string {
 	return fmt.Sprintf("Hello, %s, nice to see you here", name)
 }
 
-type api struct {
+type API struct {
 	*rfip.Client
 }
 
-func NewAPI(addr string) Handler {
-	return &api{
+func NewAPI(addr string) *API {
+	return &API{
 		Client: rfip.NewClient(addr),
 	}
 }
 
-func (i *api) Greet(name string) (s string) {
-	i.MustInvoke("Greet", name).MustUnmarshal(&s)
-	return
+func (i *API) Greet(name string) (resp *rfip.Response) {
+	return i.MustInvoke("Greet", name)
 }

@@ -22,12 +22,14 @@ Functions invoked through RFIP _always_ return data in binary format with prior
 specification of body length like so:
 
 ```
-29 Glad to see you there, my boi
- ^ ^                           ^
- | |                           |
- | *----- RESPONSE ------------*
- |
- *----- CONTENT LENGTH
+0 29 Glad to see you there, my boi
+^  ^ ^                           ^
+|  | |                           |
+|  | *----- RESPONSE ------------*
+|  |
+|  *----- CONTENT LENGTH
+|
+*----- STATUS
 ```
 
 ## Examples

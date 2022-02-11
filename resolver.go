@@ -9,23 +9,23 @@ type Resolver struct {
 	reflect.Value
 }
 
-func NewResolver(master interface{}) Resolver {
-	return Resolver{reflect.ValueOf(master)}
+func NewResolver(master interface{}) *Resolver {
+	return &Resolver{reflect.ValueOf(master)}
 }
 
-func (resr *Resolver) Resolve(req *Request) (resp *Response, err error) {
+func (resr *Resolver) Resolve(req *Request) (resp *Response) {
 	function, err := resr.funcByName(req.FuncName)
 	if err != nil {
-		return
+		return ResponseError(err)
 	}
 	returnValues, err := call(function, req.Argument)
 	if err != nil {
-		return
+		return ResponseError(err)
 	}
 	return respond(returnValues)
 }
 
-func (resr *Resolver) funcByName(name string) (f reflect.Value, err error) {
+func (resr *Resolver) funcByName(name string) (f reflect.Value, err Error) {
 	f = resr.MethodByName(name)
 	if (f == reflect.Value{}) {
 		err = ErrFuncNotFound
@@ -33,7 +33,7 @@ func (resr *Resolver) funcByName(name string) (f reflect.Value, err error) {
 	return
 }
 
-func call(f reflect.Value, arg []byte) (rvs []reflect.Value, err error) {
+func call(f reflect.Value, arg []byte) (rvs []reflect.Value, err Error) {
 	switch argc := f.Type().NumIn(); argc {
 	case 0:
 		return f.Call([]reflect.Value{}), nil
@@ -46,7 +46,7 @@ func call(f reflect.Value, arg []byte) (rvs []reflect.Value, err error) {
 	}
 }
 
-func callWithArg(f reflect.Value, arg []byte) (rvs []reflect.Value, err error) {
+func callWithArg(f reflect.Value, arg []byte) (rvs []reflect.Value, err Error) {
 	ptr, err := unmarshalArg(f.Type().In(0), arg)
 	if err != nil {
 		return
@@ -54,15 +54,15 @@ func callWithArg(f reflect.Value, arg []byte) (rvs []reflect.Value, err error) {
 	return f.Call([]reflect.Value{reflect.Indirect(ptr)}), nil
 }
 
-func unmarshalArg(t reflect.Type, arg []byte) (ptr reflect.Value, err error) {
+func unmarshalArg(t reflect.Type, arg []byte) (ptr reflect.Value, err Error) {
 	ptr = reflect.New(t)
-	if err = json.Unmarshal(arg, ptr.Interface()); err != nil {
+	if err := json.Unmarshal(arg, ptr.Interface()); err != nil {
 		err = ErrBadArgUnmarshal
 	}
 	return
 }
 
-func respond(returnValues []reflect.Value) (resp *Response, err error) {
+func respond(returnValues []reflect.Value) (resp *Response) {
 	switch len(returnValues) {
 	case 0:
 		return ResponseJSON(nil)
@@ -71,6 +71,6 @@ func respond(returnValues []reflect.Value) (resp *Response, err error) {
 		return ResponseJSON(returnValues[0].Interface())
 
 	default:
-		return nil, ErrFuncWithBadRetc
+		return ResponseError(ErrFuncWithBadRetc)
 	}
 }

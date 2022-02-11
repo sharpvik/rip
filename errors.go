@@ -1,17 +1,51 @@
 package rfip
 
-import "errors"
+import (
+	"errors"
+)
+
+type Error interface {
+	Error() string
+	Status() int
+}
+
+type errorWithStatus struct {
+	err    error
+	status int
+}
+
+func NewError(err string, status int) Error {
+	return &errorWithStatus{
+		err:    errors.New(err),
+		status: status,
+	}
+}
+
+func (ews *errorWithStatus) Error() string {
+	return ews.err.Error()
+}
+
+func (ews *errorWithStatus) Status() int {
+	return ews.status
+}
 
 var (
-	ErrBadArgMarshal        = errors.New("bad argument JSON marshal")
-	ErrBadContentLengthRead = errors.New("bad body content length read")
-	ErrInvalidContentLength = errors.New("invalid content length")
-	ErrBadURLRead           = errors.New("bad URL read")
-	ErrBadBodyRead          = errors.New("bad body read")
-	ErrUnexpectedPanic      = errors.New("unexpected panic occured")
+	/* Generic errors */
 
-	ErrFuncNotFound    = errors.New("function not found")
-	ErrBadArgUnmarshal = errors.New("bad argument JSON unmarshal")
-	ErrFuncWithBadArgc = errors.New("function must have 0 or 1 argument")
-	ErrFuncWithBadRetc = errors.New("function must return 0 or 1 value")
+	ErrBadArgMarshal = errors.New("bad argument JSON marshal")
+
+	/* Response errors */
+
+	ErrBadArgUnmarshal       = NewError("bad argument JSON unmarshal", StatusBadRequest)
+	ErrBadContentLengthRead  = NewError("bad body content length read", StatusBadRequest)
+	ErrBadResponseStatusRead = NewError("bad response status read", StatusBadRequest)
+	ErrBadFuncNameRead       = NewError("err bad function name read", StatusBadRequest)
+	ErrBadBodyRead           = NewError("bad body read", StatusBadRequest)
+	ErrInvalidContentLength  = NewError("invalid content length", StatusBadRequest)
+	ErrFuncNotFound          = NewError("function not found", StatusBadRequest)
+
+	ErrFuncWithBadArgc = NewError("function must have 0 or 1 argument", StatusInternalError)
+	ErrFuncWithBadRetc = NewError("function must return 0 or 1 value", StatusInternalError)
+	ErrBadBodyMarshal  = NewError("bad body JSON marshal", StatusInternalError)
+	ErrUnexpectedPanic = NewError("unexpected panic occured", StatusInternalError)
 )

@@ -20,9 +20,7 @@ func TestResolver(t *testing.T) {
 	resr := NewResolver(ExampleAPI{})
 	req, err := NewRequest("Greet", ExampleArg{"Viktor"})
 	assert.NoError(t, err)
-	resp, err := resr.Resolve(req)
-	assert.NoError(t, err)
-	expect, err := ResponseJSON("Hello, Viktor")
-	assert.NoError(t, err)
+	resp := resr.Resolve(req)
+	expect := ResponseJSON("Hello, Viktor")
 	assert.Equal(t, expect, resp)
 }

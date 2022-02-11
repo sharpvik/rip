@@ -1,7 +1,6 @@
 package rfip
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -37,38 +36,11 @@ func (req *Request) Send(w io.Writer) (n int, err error) {
 	return w.Write(req.Bytes())
 }
 
-func ReadRequest(rd io.Reader) (req *Request, err error) {
+func ReadRequest(rd io.Reader) (req *Request, err Error) {
 	defer func() {
 		if v := recover(); v != nil {
 			err = ErrUnexpectedPanic
 		}
 	}()
-
-	bufr := bufio.NewReader(rd)
-
-	contentLength, err := readContentLength(bufr)
-	if err != nil {
-		return
-	}
-
-	funcNameLength, funcName, err := readFuncName(bufr)
-	if err != nil {
-		return
-	}
-
-	argLength, err := calculateArgLength(contentLength, funcNameLength)
-	if err != nil {
-		return
-	}
-
-	arg, err := readBody(bufr, argLength)
-	if err != nil {
-		return
-	}
-
-	req = &Request{
-		FuncName: funcName,
-		Argument: arg,
-	}
-	return
+	return NewReader(rd).ReadRequest()
 }

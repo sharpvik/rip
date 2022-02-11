@@ -1,13 +1,15 @@
 package rfip
 
-import "net"
+import (
+	"net"
+)
 
 type Server struct {
-	Resolver
+	*Resolver
 	listener net.Listener
 }
 
-func NewServer(rsvr Resolver) *Server {
+func NewServer(rsvr *Resolver) *Server {
 	return &Server{
 		Resolver: rsvr,
 	}
@@ -45,14 +47,9 @@ func (s *Server) handleConnection(conn net.Conn) (err error) {
 }
 
 func (s *Server) handleRequest(conn net.Conn) (err error) {
-	req, err := ReadRequest(conn)
-	if err != nil {
-		return
+	req, e := ReadRequest(conn)
+	if e != nil {
+		return ResponseError(e).Send(conn)
 	}
-	resp, err := s.Resolve(req)
-	if err != nil {
-		return
-	}
-	_, err = resp.Send(conn)
-	return
+	return s.Resolve(req).Send(conn)
 }

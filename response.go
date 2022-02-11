@@ -1,40 +1,63 @@
 package rfip
 
 import (
-	"bufio"
 	"encoding/json"
 	"io"
-	"strconv"
 )
 
 type Response struct {
-	Len  int
-	Body []byte
+	Status int
+	Len    int
+	Body   []byte
 }
 
-func ResponseJSON(v interface{}) (resp *Response, err error) {
+func ResponseJSON(v interface{}) (resp *Response) {
 	body, err := json.Marshal(v)
 	if err != nil {
-		return
+		return ResponseError(ErrBadBodyMarshal)
 	}
-	resp = &Response{
-		Len:  len(body),
-		Body: body,
+	return ResponseOK(body)
+}
+
+func ResponseOK(body []byte) (resp *Response) {
+	return ResponseWithStatus(StatusOK, body)
+}
+
+// ResponseError will panic on unknown status to encourage developers to use
+// status constants declared in this package.
+func ResponseError(err Error) (resp *Response) {
+	return ResponseWithStatus(err.Status(), []byte(err.Error()))
+}
+
+func ResponseWithStatus(status int, body []byte) (resp *Response) {
+	return &Response{
+		Status: status,
+		Len:    len(body),
+		Body:   body,
 	}
-	return
 }
 
 func (resp *Response) Bytes() []byte {
-	contentLength := []byte(strconv.Itoa(resp.Len) + " ")
-	return append(contentLength, resp.Body...)
+	responseStatus := intWithSpaceAsBytes(resp.Status)
+	contentLength := intWithSpaceAsBytes(resp.Len)
+	metadata := append(responseStatus, contentLength...)
+	return append(metadata, resp.Body...)
 }
 
 func (resp *Response) String() string {
 	return string(resp.Bytes())
 }
 
-func (resp *Response) Send(w io.Writer) (n int, err error) {
-	return w.Write(resp.Bytes())
+func (resp *Response) Err() (err Error) {
+	if resp.Status != StatusOK {
+		return NewError(string(resp.Body), resp.Status)
+	}
+	return
+}
+
+func (resp *Response) Send(w io.Writer) (err error) {
+	_, err = w.Write(resp.Bytes())
+	return
 }
 
 func (resp *Response) MustUnmarshal(v interface{}) {
@@ -51,22 +74,5 @@ func ReadResponse(rd io.Reader) (resp *Response, err error) {
 			err = ErrUnexpectedPanic
 		}
 	}()
-
-	bufr := bufio.NewReader(rd)
-
-	contentLength, err := readContentLength(bufr)
-	if err != nil {
-		return
-	}
-
-	body, err := readBody(bufr, contentLength)
-	if err != nil {
-		return
-	}
-
-	resp = &Response{
-		Len:  contentLength,
-		Body: body,
-	}
-	return
+	return NewReader(rd).ReadResponse()
 }
