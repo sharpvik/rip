@@ -33,8 +33,16 @@ func (resp *Response) String() string {
 	return string(resp.Bytes())
 }
 
-func (resp Response) Send(w io.Writer) (n int, err error) {
+func (resp *Response) Send(w io.Writer) (n int, err error) {
 	return w.Write(resp.Bytes())
+}
+
+func (resp *Response) MustUnmarshal(v interface{}) {
+	PanicOnError(resp.Unmarshal(v))
+}
+
+func (resp *Response) Unmarshal(v interface{}) error {
+	return json.Unmarshal(resp.Body, v)
 }
 
 func ReadResponse(rd io.Reader) (resp *Response, err error) {

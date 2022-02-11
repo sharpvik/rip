@@ -13,7 +13,16 @@ func NewClient(addr string) *Client {
 	}
 }
 
-func (c *Client) Invoke(funcName string, arg interface{}) (resp *Response, err error) {
+func (c *Client) MustInvoke(funcName string, arg interface{}) (resp *Response) {
+	resp, err := c.Invoke(funcName, arg)
+	PanicOnError(err)
+	return
+}
+
+func (c *Client) Invoke(
+	funcName string,
+	arg interface{},
+) (resp *Response, err error) {
 	req, err := NewRequest(funcName, arg)
 	if err != nil {
 		return

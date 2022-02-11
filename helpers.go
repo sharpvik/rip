@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+func PanicOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func readContentLength(bufr *bufio.Reader) (contentLength int, err error) {
 	bodySizeString, err := bufr.ReadString(' ')
 	if err != nil {
