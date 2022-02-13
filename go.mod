@@ -1,4 +1,4 @@
-module github.com/sharpvik/rfip
+module github.com/sharpvik/rip
 
 go 1.17
 

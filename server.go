@@ -1,4 +1,4 @@
-package rfip
+package rip
 
 import (
 	"net"

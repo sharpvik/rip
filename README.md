@@ -1,6 +1,6 @@
-# Remote Function Invocation Protocol
+# Remote Invocation Protocol
 
-**RFIP** is a simple request-response protocol for remote function invocation
+**RIP** is a simple request-response protocol for remote function invocation
 designed to be used for microservices and cloud functions.
 
 ## Request
@@ -18,7 +18,7 @@ designed to be used for microservices and cloud functions.
 
 ## Response
 
-Functions invoked through RFIP _always_ return data in binary format with prior
+Functions invoked through rip _always_ return data in binary format with prior
 specification of body length like so:
 
 ```

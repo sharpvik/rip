@@ -1,6 +1,8 @@
-package rfip
+package rip
 
-import "net"
+import (
+	"net"
+)
 
 type Client struct {
 	Addr string

@@ -3,7 +3,7 @@ package handler
 import (
 	"fmt"
 
-	"github.com/sharpvik/rfip"
+	"github.com/sharpvik/rip"
 )
 
 type Handler struct{}
@@ -17,15 +17,15 @@ func (h *Handler) Greet(name string) string {
 }
 
 type API struct {
-	*rfip.Client
+	*rip.Client
 }
 
 func NewAPI(addr string) *API {
 	return &API{
-		Client: rfip.NewClient(addr),
+		Client: rip.NewClient(addr),
 	}
 }
 
-func (i *API) Greet(name string) (resp *rfip.Response) {
+func (i *API) Greet(name string) (resp *rip.Response) {
 	return i.MustInvoke("Greet", name)
 }

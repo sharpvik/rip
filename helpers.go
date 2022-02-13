@@ -1,6 +1,8 @@
-package rfip
+package rip
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func PanicOnError(err error) {
 	if err != nil {

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/sharpvik/rfip/server/handler"
+	"github.com/sharpvik/rip/server/handler"
 )
 
 const addr = ":8000"

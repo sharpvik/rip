@@ -1,4 +1,4 @@
-package rfip
+package rip
 
 // Response status constants.
 const (
