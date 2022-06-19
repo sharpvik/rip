@@ -16,9 +16,9 @@ func NewReader(rd io.Reader) (r *Reader) {
 }
 
 func (r *Reader) ReadRequest() (req *Request, err Error) {
-	contentLength, err := r.readContentLength()
-	if err != nil {
-		return
+	contentLength, e := r.readInt()
+	if e != nil {
+		return nil, ErrBadContentLengthRead
 	}
 
 	funcNameLength, funcName, err := r.readFuncName()
@@ -37,46 +37,39 @@ func (r *Reader) ReadRequest() (req *Request, err Error) {
 	}
 
 	return &Request{
-		FuncName: funcName,
+		Function: funcName,
 		Argument: arg,
 	}, nil
 }
 
-func (r *Reader) ReadResponse() (resp *Response, err error) {
+func (r *Reader) ReadResponse() (resp *Response) {
 	responseStatus, err := r.readResponseStatus()
 	if err != nil {
-		return
+		return ResponseError(err)
 	}
 
-	contentLength, err := r.readContentLength()
-	if err != nil {
-		return
+	contentLength, e := r.readInt()
+	if e != nil {
+		return ResponseError(WrapError(
+			ErrBadContentLengthRead, StatusBadResponse))
 	}
 
 	body, err := r.readBody(contentLength)
 	if err != nil {
-		return
+		return ResponseError(err)
 	}
 
 	return &Response{
 		Status: responseStatus,
 		Len:    contentLength,
 		Body:   body,
-	}, nil
-}
-
-func (r *Reader) readResponseStatus() (status int, err error) {
-	status, err = r.readInt()
-	if err != nil {
-		err = ErrBadResponseStatusRead
 	}
-	return
 }
 
-func (r *Reader) readContentLength() (contentLength int, err Error) {
-	contentLength, e := r.readInt()
+func (r *Reader) readResponseStatus() (status int, err Error) {
+	status, e := r.readInt()
 	if e != nil {
-		err = ErrBadContentLengthRead
+		err = WrapError(ErrBadResponseStatusRead, StatusBadResponse)
 	}
 	return
 }

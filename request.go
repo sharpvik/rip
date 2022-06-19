@@ -7,33 +7,35 @@ import (
 )
 
 type Request struct {
-	FuncName string
+	Function string
 	Argument []byte
 }
 
-func NewRequest(funcName string, argument interface{}) (r *Request, err error) {
-	arg, err := json.Marshal(argument)
-	if err != nil {
-		return nil, ErrBadArgMarshal
+func NewRequest(function string, argument interface{}) (*Request, Error) {
+	arg, e := json.Marshal(argument)
+	if e != nil {
+		return nil, WrapError(e, StatusBadRequest)
 	}
-	r = &Request{
-		FuncName: funcName,
+	return &Request{
+		Function: function,
 		Argument: arg,
-	}
-	return
+	}, nil
 }
 
 func (req *Request) String() string {
-	bodySize := len(req.FuncName) + 1 + len(req.Argument)
-	return fmt.Sprintf("%d %s %s", bodySize, req.FuncName, req.Argument)
+	bodySize := len(req.Function) + 1 + len(req.Argument)
+	return fmt.Sprintf("%d %s %s", bodySize, req.Function, req.Argument)
 }
 
 func (req *Request) Bytes() []byte {
 	return []byte(req.String())
 }
 
-func (req *Request) Send(w io.Writer) (n int, err error) {
-	return w.Write(req.Bytes())
+func (req *Request) Send(w io.Writer) (err Error) {
+	if _, e := w.Write(req.Bytes()); e != nil {
+		return WrapError(e, StatusConnectionError)
+	}
+	return
 }
 
 func ReadRequest(rd io.Reader) (req *Request, err Error) {

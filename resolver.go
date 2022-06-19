@@ -20,11 +20,11 @@ func (r *resolver) Server() *Server {
 }
 
 func (r *resolver) Handle(req *Request) (resp *Response) {
-	function, err := r.funcByName(req.FuncName)
+	function, err := r.funcByName(req.Function)
 	if err != nil {
 		return ResponseError(err)
 	}
-	returnValues, err := call(function, req.Argument)
+	returnValues, err := invoke(function, req.Argument)
 	if err != nil {
 		return ResponseError(err)
 	}
@@ -39,7 +39,7 @@ func (r *resolver) funcByName(name string) (f reflect.Value, err Error) {
 	return
 }
 
-func call(f reflect.Value, arg []byte) (rvs []reflect.Value, err Error) {
+func invoke(f reflect.Value, arg []byte) (rvs []reflect.Value, err Error) {
 	switch argc := f.Type().NumIn(); argc {
 	case 0:
 		return f.Call([]reflect.Value{}), nil

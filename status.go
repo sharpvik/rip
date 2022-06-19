@@ -4,6 +4,8 @@ package rip
 const (
 	StatusOK = iota
 
+	StatusConnectionError
 	StatusBadRequest
 	StatusServiceMalfunction
+	StatusBadResponse
 )

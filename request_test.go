@@ -9,12 +9,12 @@ import (
 
 func TestRequestReader(t *testing.T) {
 	input := &Request{
-		FuncName: "greet",
+		Function: "greet",
 		Argument: []byte(`{"hello": "world"}`),
 	}
 
 	output, err := ReadRequest(strings.NewReader(input.String()))
 	assert.NoError(t, err)
-	assert.Equal(t, input.FuncName, output.FuncName)
+	assert.Equal(t, input.Function, output.Function)
 	assert.Equal(t, input.Argument, output.Argument)
 }

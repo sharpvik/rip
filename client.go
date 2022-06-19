@@ -15,39 +15,31 @@ func NewClient(addr string) *Client {
 	}
 }
 
-func (c *Client) MustInvoke(funcName string, arg interface{}) (resp *Response) {
-	resp, err := c.Invoke(funcName, arg)
-	PanicOnError(err)
-	return
+func (c *Client) Call(function string) *call {
+	return &call{
+		Client:   c,
+		function: function,
+	}
 }
 
-func (c *Client) Invoke(
-	funcName string,
-	arg interface{},
-) (resp *Response, err error) {
-	req, err := NewRequest(funcName, arg)
-	if err != nil {
+func (c *Client) Send(req *Request) (err Error) {
+	if err = c.Connect(); err != nil {
 		return
-	}
-	if _, err = c.Send(req); err != nil {
-		return
-	}
-	return ReadResponse(c.conn)
-}
-
-func (c *Client) Send(req *Request) (n int, err error) {
-	if c.conn == nil {
-		if err = c.Connect(); err != nil {
-			return
-		}
 	}
 	return req.Send(c.conn)
 }
 
-func (c *Client) Connect() (err error) {
-	conn, err := net.Dial("tcp", c.Addr)
-	if err != nil {
-		return
+func (c *Client) Connect() (err Error) {
+	if c.conn == nil {
+		err = c.Dial()
+	}
+	return
+}
+
+func (c *Client) Dial() (err Error) {
+	conn, e := net.Dial("tcp", c.Addr)
+	if e != nil {
+		return WrapError(e, StatusConnectionError)
 	}
 	c.conn = conn
 	return

@@ -15,7 +15,7 @@ func Service(addr string) *service {
 }
 
 func (s *service) RandInt() (i int, err rip.Error) {
-	err = s.rip.MustInvoke("RandInt", nil).Return(&i)
+	err = s.rip.Call("RandInt").Return(&i)
 	return
 }
 
