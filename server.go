@@ -5,21 +5,13 @@ import (
 )
 
 type Server struct {
-	*Resolver
+	*resolver
 	listener net.Listener
 }
 
-func NewServer(rsvr *Resolver) *Server {
-	return &Server{
-		Resolver: rsvr,
-	}
-}
-
-func NewServerWithResolver(master interface{}) *Server {
-	return NewServer(NewResolver(master))
-}
-
-func (s *Server) ListenAndServe(addr string) (err error) {
+// ListenAndServeTCP opens a TCP connection and handles traffic according to
+// the RIP/TCP conventions.
+func (s *Server) ListenAndServeTCP(addr string) (err error) {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return
@@ -51,5 +43,5 @@ func (s *Server) handleRequest(conn net.Conn) (err error) {
 	if e != nil {
 		return ResponseError(e).Send(conn)
 	}
-	return s.Resolve(req).Send(conn)
+	return s.Handle(req).Send(conn)
 }

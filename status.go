@@ -5,5 +5,5 @@ const (
 	StatusOK = iota
 
 	StatusBadRequest
-	StatusInternalError
+	StatusServiceMalfunction
 )

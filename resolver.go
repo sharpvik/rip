@@ -5,16 +5,22 @@ import (
 	"reflect"
 )
 
-type Resolver struct {
+type resolver struct {
 	reflect.Value
 }
 
-func NewResolver(master interface{}) *Resolver {
-	return &Resolver{reflect.ValueOf(master)}
+func Use(source interface{}) *resolver {
+	return &resolver{reflect.ValueOf(source)}
 }
 
-func (resr *Resolver) Resolve(req *Request) (resp *Response) {
-	function, err := resr.funcByName(req.FuncName)
+func (r *resolver) Server() *Server {
+	return &Server{
+		resolver: r,
+	}
+}
+
+func (r *resolver) Handle(req *Request) (resp *Response) {
+	function, err := r.funcByName(req.FuncName)
 	if err != nil {
 		return ResponseError(err)
 	}
@@ -25,8 +31,8 @@ func (resr *Resolver) Resolve(req *Request) (resp *Response) {
 	return respond(returnValues)
 }
 
-func (resr *Resolver) funcByName(name string) (f reflect.Value, err Error) {
-	f = resr.MethodByName(name)
+func (r *resolver) funcByName(name string) (f reflect.Value, err Error) {
+	f = r.MethodByName(name)
 	if (f == reflect.Value{}) {
 		err = ErrFuncNotFound
 	}

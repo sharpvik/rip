@@ -7,20 +7,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type ExampleAPI struct{}
-type ExampleArg struct {
-	Name string `json:"name"`
+type api struct{}
+
+type person struct {
+	Name string
 }
 
-func (api ExampleAPI) Greet(arg *ExampleArg) string {
-	return fmt.Sprintf("Hello, %s", arg.Name)
+func (i api) Greet(human *person) string {
+	return fmt.Sprintf("Hello, %s", human.Name)
 }
 
 func TestResolver(t *testing.T) {
-	resr := NewResolver(ExampleAPI{})
-	req, err := NewRequest("Greet", ExampleArg{"Viktor"})
+	req, err := NewRequest("Greet", person{"Viktor"})
 	assert.NoError(t, err)
-	resp := resr.Resolve(req)
-	expect := ResponseJSON("Hello, Viktor")
-	assert.Equal(t, expect, resp)
+	assert.Equal(t, ResponseJSON("Hello, Viktor"), Use(new(api)).Handle(req))
 }

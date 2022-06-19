@@ -37,6 +37,10 @@ func ResponseWithStatus(status int, body []byte) (resp *Response) {
 	}
 }
 
+func (resp *Response) OK() bool {
+	return resp.Status == StatusOK
+}
+
 func (resp *Response) Bytes() []byte {
 	responseStatus := intWithSpaceAsBytes(resp.Status)
 	contentLength := intWithSpaceAsBytes(resp.Len)
@@ -48,11 +52,11 @@ func (resp *Response) String() string {
 	return string(resp.Bytes())
 }
 
-func (resp *Response) Err() (err Error) {
-	if resp.Status != StatusOK {
-		return NewError(string(resp.Body), resp.Status)
+func (resp *Response) Err() Error {
+	if resp.Status == StatusOK {
+		return nil
 	}
-	return
+	return NewError(string(resp.Body), resp.Status)
 }
 
 func (resp *Response) Send(w io.Writer) (err error) {
@@ -64,8 +68,21 @@ func (resp *Response) MustUnmarshal(v interface{}) {
 	PanicOnError(resp.Unmarshal(v))
 }
 
-func (resp *Response) Unmarshal(v interface{}) error {
-	return json.Unmarshal(resp.Body, v)
+// Return checks if response contains an error, and if it does, returns
+// that error straight away. Otherwise, it uses Response.Unmarshal to decode
+// response body.
+func (resp *Response) Return(v interface{}) Error {
+	if err := resp.Err(); err != nil {
+		return err
+	}
+	return resp.Unmarshal(v)
+}
+
+func (resp *Response) Unmarshal(v interface{}) Error {
+	if err := json.Unmarshal(resp.Body, v); err != nil {
+		return NewError(err.Error(), StatusServiceMalfunction)
+	}
+	return nil
 }
 
 func ReadResponse(rd io.Reader) (resp *Response, err error) {

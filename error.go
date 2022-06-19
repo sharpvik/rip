@@ -25,6 +25,10 @@ func (ews *errorWithStatus) Error() string {
 	return ews.err.Error()
 }
 
+func (ews *errorWithStatus) String() string {
+	return ews.Error()
+}
+
 func (ews *errorWithStatus) Status() int {
 	return ews.status
 }
@@ -44,8 +48,8 @@ var (
 	ErrInvalidContentLength  = NewError("invalid content length", StatusBadRequest)
 	ErrFuncNotFound          = NewError("function not found", StatusBadRequest)
 
-	ErrFuncWithBadArgc = NewError("function must have 0 or 1 argument", StatusInternalError)
-	ErrFuncWithBadRetc = NewError("function must return 0 or 1 value", StatusInternalError)
-	ErrBadBodyMarshal  = NewError("bad body JSON marshal", StatusInternalError)
-	ErrUnexpectedPanic = NewError("unexpected panic occured", StatusInternalError)
+	ErrFuncWithBadArgc = NewError("function must have 0 or 1 argument", StatusServiceMalfunction)
+	ErrFuncWithBadRetc = NewError("function must return 0 or 1 value", StatusServiceMalfunction)
+	ErrBadBodyMarshal  = NewError("bad body JSON marshal", StatusServiceMalfunction)
+	ErrUnexpectedPanic = NewError("unexpected panic occured", StatusServiceMalfunction)
 )
