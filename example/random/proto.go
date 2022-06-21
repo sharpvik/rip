@@ -4,12 +4,12 @@ import (
 	"math/rand"
 )
 
-type proto struct{}
+type actor struct{}
 
-func Proto() *proto {
-	return new(proto)
+func Proto() *actor {
+	return new(actor)
 }
 
-func (p *proto) RandInt() int {
+func (p *actor) RandInt() int {
 	return rand.Int()
 }

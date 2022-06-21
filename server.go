@@ -2,6 +2,9 @@ package rip
 
 import (
 	"net"
+
+	"github.com/sharpvik/rip/proto"
+	riptcp "github.com/sharpvik/rip/tcp"
 )
 
 type Server struct {
@@ -39,9 +42,9 @@ func (s *Server) handleConnection(conn net.Conn) (err error) {
 }
 
 func (s *Server) handleRequest(conn net.Conn) (err error) {
-	req, e := ReadRequest(conn)
+	req, e := riptcp.ReadRequest(conn)
 	if e != nil {
-		return ResponseError(e).Send(conn)
+		return proto.ResponseError(e).Send(conn)
 	}
 	return s.Handle(req).Send(conn)
 }

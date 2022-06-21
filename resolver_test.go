@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/sharpvik/rip/proto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +19,7 @@ func (i api) Greet(human *person) string {
 }
 
 func TestResolver(t *testing.T) {
-	req, err := NewRequest("Greet", person{"Viktor"})
+	req, err := proto.NewRequest("Greet", person{"Viktor"})
 	assert.NoError(t, err)
-	assert.Equal(t, ResponseJSON("Hello, Viktor"), Use(new(api)).Handle(req))
+	assert.Equal(t, proto.ResponseJSON("Hello, Viktor"), Use(new(api)).Handle(req))
 }

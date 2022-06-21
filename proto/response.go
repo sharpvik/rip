@@ -1,8 +1,10 @@
-package rip
+package proto
 
 import (
 	"encoding/json"
 	"io"
+
+	"github.com/sharpvik/rip/util"
 )
 
 type Response struct {
@@ -65,7 +67,7 @@ func (resp *Response) Send(w io.Writer) (err error) {
 }
 
 func (resp *Response) MustUnmarshal(v interface{}) {
-	PanicOnError(resp.Unmarshal(v))
+	util.PanicOnError(resp.Unmarshal(v))
 }
 
 func (resp *Response) Unmarshal(v interface{}) Error {
@@ -73,13 +75,4 @@ func (resp *Response) Unmarshal(v interface{}) Error {
 		return WrapError(err, StatusServiceMalfunction)
 	}
 	return nil
-}
-
-func ReadResponse(rd io.Reader) (resp *Response) {
-	defer func() {
-		if v := recover(); v != nil {
-			resp = ResponseError(ErrUnexpectedPanic)
-		}
-	}()
-	return NewReader(rd).ReadResponse()
 }

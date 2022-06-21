@@ -1,4 +1,4 @@
-package rip
+package proto
 
 import (
 	"encoding/json"
@@ -36,13 +36,4 @@ func (req *Request) Send(w io.Writer) (err Error) {
 		return WrapError(e, StatusConnectionError)
 	}
 	return
-}
-
-func ReadRequest(rd io.Reader) (req *Request, err Error) {
-	defer func() {
-		if v := recover(); v != nil {
-			err = ErrUnexpectedPanic
-		}
-	}()
-	return NewReader(rd).ReadRequest()
 }

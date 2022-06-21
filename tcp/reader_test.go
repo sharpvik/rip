@@ -1,14 +1,15 @@
-package rip
+package riptcp
 
 import (
 	"strings"
 	"testing"
 
+	"github.com/sharpvik/rip/proto"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRequestReader(t *testing.T) {
-	input := &Request{
+	input := &proto.Request{
 		Function: "greet",
 		Argument: []byte(`{"hello": "world"}`),
 	}

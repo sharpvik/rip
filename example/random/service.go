@@ -2,6 +2,7 @@ package random
 
 import (
 	"github.com/sharpvik/rip"
+	"github.com/sharpvik/rip/proto"
 )
 
 type service struct {
@@ -14,7 +15,7 @@ func Service(addr string) *service {
 	}
 }
 
-func (s *service) RandInt() (i int, err rip.Error) {
+func (s *service) RandInt() (i int, err proto.Error) {
 	err = s.rip.Call("RandInt").Return(&i)
 	return
 }
