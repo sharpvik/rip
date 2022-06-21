@@ -14,8 +14,8 @@ func TestRequestReader(t *testing.T) {
 		Argument: []byte(`{"hello": "world"}`),
 	}
 
-	output, err := ReadRequest(strings.NewReader(input.String()))
-	assert.NoError(t, err)
+	output, e := ReadRequest(strings.NewReader(input.String()))
+	assert.NoError(t, e)
 	assert.Equal(t, input.Function, output.Function)
 	assert.Equal(t, input.Argument, output.Argument)
 }

@@ -17,12 +17,12 @@ func (c *call) Arg(arg interface{}) *call {
 }
 
 func (c *call) Response() *proto.Response {
-	req, err := proto.NewRequest(c.function, c.argument)
-	if err != nil {
-		return proto.ResponseError(err)
+	req, e := proto.NewRequest(c.function, c.argument)
+	if e != nil {
+		return proto.ResponseError(e)
 	}
-	if err = c.Send(req); err != nil {
-		return proto.ResponseError(err)
+	if e = c.Send(req); e != nil {
+		return proto.ResponseError(e)
 	}
 	return riptcp.ReadResponse(c.conn)
 }
@@ -31,8 +31,8 @@ func (c *call) Response() *proto.Response {
 // that error straight away. Otherwise, it uses Unmarshal to decode response.
 func (c *call) Return(v interface{}) proto.Error {
 	resp := c.Response()
-	if err := resp.Err(); err != nil {
-		return err
+	if e := resp.Err(); e != nil {
+		return e
 	}
 	return resp.Unmarshal(v)
 }

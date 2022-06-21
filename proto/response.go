@@ -1,6 +1,7 @@
 package proto
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 
@@ -22,16 +23,20 @@ func ResponseJSON(v interface{}) (resp *Response) {
 }
 
 func ResponseOK(body []byte) (resp *Response) {
-	return ResponseWithStatus(StatusOK, body)
+	return ResponseRaw(StatusOK, body)
 }
 
 // ResponseError will panic on unknown status to encourage developers to use
 // status constants declared in this package.
 func ResponseError(err Error) (resp *Response) {
-	return ResponseWithStatus(err.Status(), []byte(err.Error()))
+	return ResponseRaw(err.Status(), []byte(err.Error()))
 }
 
-func ResponseWithStatus(status int, body []byte) (resp *Response) {
+func ResponseWrapError(err error, status int) (resp *Response) {
+	return ResponseError(WrapError(err, status))
+}
+
+func ResponseRaw(status int, body []byte) (resp *Response) {
 	return &Response{
 		Status: status,
 		Len:    len(body),
@@ -44,10 +49,11 @@ func (resp *Response) OK() bool {
 }
 
 func (resp *Response) Bytes() []byte {
-	responseStatus := intWithSpaceAsBytes(resp.Status)
-	contentLength := intWithSpaceAsBytes(resp.Len)
-	metadata := append(responseStatus, contentLength...)
-	return append(metadata, resp.Body...)
+	var b bytes.Buffer
+	b.Write(intWithSpaceAsBytes(resp.Status))
+	b.Write(intWithSpaceAsBytes(resp.Len))
+	b.Write(resp.Body)
+	return b.Bytes()
 }
 
 func (resp *Response) String() string {
@@ -55,7 +61,7 @@ func (resp *Response) String() string {
 }
 
 func (resp *Response) Err() Error {
-	if resp.Status == StatusOK {
+	if resp.OK() {
 		return nil
 	}
 	return NewError(string(resp.Body), resp.Status)
@@ -72,7 +78,7 @@ func (resp *Response) MustUnmarshal(v interface{}) {
 
 func (resp *Response) Unmarshal(v interface{}) Error {
 	if err := json.Unmarshal(resp.Body, v); err != nil {
-		return WrapError(err, StatusServiceMalfunction)
+		return WrapError(err, StatusServiceFailure)
 	}
 	return nil
 }

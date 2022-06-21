@@ -8,8 +8,14 @@ import (
 )
 
 type Server struct {
-	*resolver
+	Resolver
 	listener net.Listener
+}
+
+func NewServer(r Resolver) *Server {
+	return &Server{
+		Resolver: r,
+	}
 }
 
 // ListenAndServeTCP opens a TCP connection and handles traffic according to

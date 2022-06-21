@@ -7,41 +7,44 @@ import (
 	"github.com/sharpvik/rip/proto"
 )
 
+type Resolver interface {
+	Handle(*proto.Request) *proto.Response
+	Server() *Server
+}
+
 type resolver struct {
 	reflect.Value
 }
 
-func Use(source interface{}) *resolver {
+func Use(source interface{}) Resolver {
 	return &resolver{reflect.ValueOf(source)}
 }
 
 func (r *resolver) Server() *Server {
-	return &Server{
-		resolver: r,
-	}
+	return NewServer(r)
 }
 
-func (r *resolver) Handle(req *proto.Request) (resp *proto.Response) {
-	function, err := r.funcByName(req.Function)
-	if err != nil {
-		return proto.ResponseError(err)
+func (r *resolver) Handle(req *proto.Request) *proto.Response {
+	function, e := r.funcByName(req.Function)
+	if e != nil {
+		return proto.ResponseError(e)
 	}
-	returnValues, err := invoke(function, req.Argument)
-	if err != nil {
-		return proto.ResponseError(err)
+	returnValues, e := invoke(function, req.Argument)
+	if e != nil {
+		return proto.ResponseError(e)
 	}
 	return respond(returnValues)
 }
 
-func (r *resolver) funcByName(name string) (f reflect.Value, err proto.Error) {
+func (r *resolver) funcByName(name string) (f reflect.Value, e proto.Error) {
 	f = r.MethodByName(name)
 	if (f == reflect.Value{}) {
-		err = proto.ErrFuncNotFound
+		e = proto.ErrFuncNotFound
 	}
 	return
 }
 
-func invoke(f reflect.Value, arg []byte) (rvs []reflect.Value, err proto.Error) {
+func invoke(f reflect.Value, arg []byte) ([]reflect.Value, proto.Error) {
 	switch argc := f.Type().NumIn(); argc {
 	case 0:
 		return f.Call([]reflect.Value{}), nil
@@ -54,23 +57,23 @@ func invoke(f reflect.Value, arg []byte) (rvs []reflect.Value, err proto.Error) 
 	}
 }
 
-func callWithArg(f reflect.Value, arg []byte) (rvs []reflect.Value, err proto.Error) {
-	ptr, err := unmarshalArg(f.Type().In(0), arg)
-	if err != nil {
+func callWithArg(f reflect.Value, arg []byte) (rvs []reflect.Value, e proto.Error) {
+	ptr, e := unmarshalArg(f.Type().In(0), arg)
+	if e != nil {
 		return
 	}
 	return f.Call([]reflect.Value{reflect.Indirect(ptr)}), nil
 }
 
-func unmarshalArg(t reflect.Type, arg []byte) (ptr reflect.Value, err proto.Error) {
+func unmarshalArg(t reflect.Type, arg []byte) (ptr reflect.Value, e proto.Error) {
 	ptr = reflect.New(t)
 	if err := json.Unmarshal(arg, ptr.Interface()); err != nil {
-		err = proto.ErrBadArgUnmarshal
+		e = proto.ErrBadArgUnmarshal
 	}
 	return
 }
 
-func respond(returnValues []reflect.Value) (resp *proto.Response) {
+func respond(returnValues []reflect.Value) *proto.Response {
 	switch len(returnValues) {
 	case 0:
 		return proto.ResponseJSON(nil)

@@ -24,24 +24,24 @@ func (c *Client) Call(function string) *call {
 	}
 }
 
-func (c *Client) Send(req *proto.Request) (err proto.Error) {
-	if err = c.Connect(); err != nil {
+func (c *Client) Send(req *proto.Request) (e proto.Error) {
+	if e = c.Connect(); e != nil {
 		return
 	}
 	return req.Send(c.conn)
 }
 
-func (c *Client) Connect() (err proto.Error) {
+func (c *Client) Connect() (e proto.Error) {
 	if c.conn == nil {
-		err = c.Dial()
+		e = c.Dial()
 	}
 	return
 }
 
-func (c *Client) Dial() (err proto.Error) {
-	conn, e := net.Dial("tcp", c.Addr)
-	if e != nil {
-		return proto.WrapError(e, proto.StatusConnectionError)
+func (c *Client) Dial() (e proto.Error) {
+	conn, err := net.Dial("tcp", c.Addr)
+	if err != nil {
+		return proto.WrapError(err, proto.StatusConnectionError)
 	}
 	c.conn = conn
 	return

@@ -7,7 +7,7 @@ import (
 func calculateArgLength(
 	contentLength int,
 	funcNameLength int,
-) (length int, err proto.Error) {
+) (length int, err error) {
 	length = contentLength - funcNameLength
 	if length < 0 {
 		err = proto.ErrInvalidContentLength

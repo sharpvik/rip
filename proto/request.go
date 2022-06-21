@@ -12,9 +12,9 @@ type Request struct {
 }
 
 func NewRequest(function string, argument interface{}) (*Request, Error) {
-	arg, e := json.Marshal(argument)
-	if e != nil {
-		return nil, WrapError(e, StatusBadRequest)
+	arg, err := json.Marshal(argument)
+	if err != nil {
+		return nil, WrapError(err, StatusBadRequest)
 	}
 	return &Request{
 		Function: function,
@@ -31,9 +31,9 @@ func (req *Request) Bytes() []byte {
 	return []byte(req.String())
 }
 
-func (req *Request) Send(w io.Writer) (err Error) {
-	if _, e := w.Write(req.Bytes()); e != nil {
-		return WrapError(e, StatusConnectionError)
+func (req *Request) Send(w io.Writer) (e Error) {
+	if _, err := w.Write(req.Bytes()); err != nil {
+		e = WrapError(err, StatusConnectionError)
 	}
 	return
 }
