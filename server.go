@@ -8,13 +8,13 @@ import (
 )
 
 type Server struct {
-	Resolver
+	Handler
 	listener net.Listener
 }
 
-func NewServer(r Resolver) *Server {
+func NewServer(h Handler) *Server {
 	return &Server{
-		Resolver: r,
+		Handler: h,
 	}
 }
 
