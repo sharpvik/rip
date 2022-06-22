@@ -8,19 +8,9 @@ import (
 	"github.com/sharpvik/rip/proto"
 )
 
-type RequestReader struct {
-	req *http.Request
-}
-
-func NewRequestReader(r *http.Request) *RequestReader {
-	return &RequestReader{
-		req: r,
-	}
-}
-
-func (r *RequestReader) ReadRequest() (req *proto.Request, e proto.Error) {
-	argument, e := readArg(r.req)
-	req = proto.NewRequestRaw(readFuncName(r.req), argument)
+func ReadRequest(r *http.Request) (req *proto.Request, e proto.Error) {
+	argument, e := readArg(r)
+	req = proto.NewRequestRaw(readFuncName(r), argument)
 	return
 }
 
