@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	i, err := random.Service(random.Addr).RandInt()
+	i, err := random.Client(random.Addr).RandInt()
 	if err != nil {
 		log.Fatalln("response error:", err)
 	}
