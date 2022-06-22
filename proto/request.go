@@ -11,15 +11,19 @@ type Request struct {
 	Argument []byte
 }
 
-func NewRequest(function string, argument interface{}) (*Request, Error) {
-	arg, err := json.Marshal(argument)
+func NewRequest(function string, arg interface{}) (*Request, Error) {
+	argument, err := json.Marshal(arg)
 	if err != nil {
 		return nil, WrapError(err, StatusBadRequest)
 	}
+	return NewRequestRaw(function, argument), nil
+}
+
+func NewRequestRaw(function string, argument []byte) *Request {
 	return &Request{
 		Function: function,
-		Argument: arg,
-	}, nil
+		Argument: argument,
+	}
 }
 
 func (req *Request) String() string {

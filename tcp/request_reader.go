@@ -21,7 +21,7 @@ func (r *RequestReader) ReadRequest() (req *proto.Request, e proto.Error) {
 		return nil, proto.WrapError(proto.ErrBadContentLengthRead, proto.StatusBadRequest)
 	}
 
-	funcNameLength, funcName, e := readFuncName(r.Reader)
+	funcNameLength, function, e := readFuncName(r.Reader)
 	if e != nil {
 		return
 	}
@@ -31,13 +31,10 @@ func (r *RequestReader) ReadRequest() (req *proto.Request, e proto.Error) {
 		return nil, proto.WrapError(err, proto.StatusBadRequest)
 	}
 
-	arg, err := readBody(r.Reader, argLength)
+	argument, err := readBody(r.Reader, argLength)
 	if e != nil {
 		return nil, proto.WrapError(err, proto.StatusBadRequest)
 	}
 
-	return &proto.Request{
-		Function: funcName,
-		Argument: arg,
-	}, nil
+	return proto.NewRequestRaw(function, argument), nil
 }
