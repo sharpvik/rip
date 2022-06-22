@@ -3,7 +3,6 @@ package proto
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 
 	"github.com/sharpvik/rip/util"
 )
@@ -65,11 +64,6 @@ func (resp *Response) Err() Error {
 		return nil
 	}
 	return NewError(string(resp.Body), resp.Status)
-}
-
-func (resp *Response) Send(w io.Writer) (err error) {
-	_, err = w.Write(resp.Bytes())
-	return
 }
 
 func (resp *Response) MustUnmarshal(v interface{}) {

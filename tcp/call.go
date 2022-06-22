@@ -1,22 +1,21 @@
-package rip
+package riptcp
 
 import (
 	"github.com/sharpvik/rip/proto"
-	riptcp "github.com/sharpvik/rip/tcp"
 )
 
-type call struct {
+type Call struct {
 	*Client
 	function string
 	argument interface{}
 }
 
-func (c *call) Arg(arg interface{}) *call {
+func (c *Call) Arg(arg interface{}) *Call {
 	c.argument = arg
 	return c
 }
 
-func (c *call) Response() *proto.Response {
+func (c *Call) Response() *proto.Response {
 	req, e := proto.NewRequest(c.function, c.argument)
 	if e != nil {
 		return proto.ResponseError(e)
@@ -24,12 +23,12 @@ func (c *call) Response() *proto.Response {
 	if e = c.Send(req); e != nil {
 		return proto.ResponseError(e)
 	}
-	return riptcp.ReadResponse(c.conn)
+	return ReadResponse(c.conn)
 }
 
 // Return checks if response contains an error, and if it does, returns
 // that error straight away. Otherwise, it uses Unmarshal to decode response.
-func (c *call) Return(v interface{}) proto.Error {
+func (c *Call) Return(v interface{}) proto.Error {
 	resp := c.Response()
 	if e := resp.Err(); e != nil {
 		return e
@@ -38,6 +37,6 @@ func (c *call) Return(v interface{}) proto.Error {
 }
 
 // Err ignores the return value and reports response error if present.
-func (c *call) Err() proto.Error {
+func (c *Call) Err() proto.Error {
 	return c.Response().Err()
 }

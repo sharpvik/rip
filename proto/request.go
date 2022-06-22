@@ -3,7 +3,6 @@ package proto
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 )
 
 type Request struct {
@@ -33,11 +32,4 @@ func (req *Request) String() string {
 
 func (req *Request) Bytes() []byte {
 	return []byte(req.String())
-}
-
-func (req *Request) Send(w io.Writer) (e Error) {
-	if _, err := w.Write(req.Bytes()); err != nil {
-		e = WrapError(err, StatusConnectionError)
-	}
-	return
 }

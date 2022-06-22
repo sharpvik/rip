@@ -1,4 +1,4 @@
-package rip
+package riptcp
 
 import (
 	"net"
@@ -17,8 +17,8 @@ func NewClient(addr string) *Client {
 	}
 }
 
-func (c *Client) Call(function string) *call {
-	return &call{
+func (c *Client) Call(function string) *Call {
+	return &Call{
 		Client:   c,
 		function: function,
 	}
@@ -28,7 +28,7 @@ func (c *Client) Send(req *proto.Request) (e proto.Error) {
 	if e = c.Connect(); e != nil {
 		return
 	}
-	return req.Send(c.conn)
+	return SendRequest(c.conn, req)
 }
 
 func (c *Client) Connect() (e proto.Error) {

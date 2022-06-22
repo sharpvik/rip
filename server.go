@@ -26,31 +26,31 @@ func (s *Server) ListenAndServeTCP(addr string) (err error) {
 		return
 	}
 	s.listener = listener
-	return s.acceptConnections()
+	return s.acceptConnectionsTCP()
 }
 
-func (s *Server) acceptConnections() (err error) {
+func (s *Server) ServeTCP(conn net.Conn) (err error) {
+	req, e := riptcp.ReadRequest(conn)
+	if e != nil {
+		return riptcp.SendResponse(conn, proto.ResponseError(e))
+	}
+	return riptcp.SendResponse(conn, s.Handle(req))
+}
+
+func (s *Server) acceptConnectionsTCP() (err error) {
 	for {
 		conn, err := s.listener.Accept()
 		if err != nil {
 			return err
 		}
-		go s.handleConnection(conn)
+		go s.handleConnectionTCP(conn)
 	}
 }
 
-func (s *Server) handleConnection(conn net.Conn) (err error) {
+func (s *Server) handleConnectionTCP(conn net.Conn) (err error) {
 	for {
-		if err = s.handleRequest(conn); err != nil {
+		if err = s.ServeTCP(conn); err != nil {
 			return
 		}
 	}
-}
-
-func (s *Server) handleRequest(conn net.Conn) (err error) {
-	req, e := riptcp.ReadRequest(conn)
-	if e != nil {
-		return proto.ResponseError(e).Send(conn)
-	}
-	return s.Handle(req).Send(conn)
 }

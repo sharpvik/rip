@@ -3,15 +3,16 @@ package random
 import (
 	"github.com/sharpvik/rip"
 	"github.com/sharpvik/rip/proto"
+	riptcp "github.com/sharpvik/rip/tcp"
 )
 
 type Service struct {
-	rip *rip.Client
+	rip *riptcp.Client
 }
 
 func Client(addr string) *Service {
 	return &Service{
-		rip: rip.NewClient(addr),
+		rip: riptcp.NewClient(addr),
 	}
 }
 
