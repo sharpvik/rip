@@ -1,7 +1,7 @@
 package riptcp
 
 import (
-	"github.com/sharpvik/rip/proto"
+	"github.com/sharpvik/rip"
 )
 
 func calculateArgLength(
@@ -10,7 +10,7 @@ func calculateArgLength(
 ) (length int, err error) {
 	length = contentLength - funcNameLength
 	if length < 0 {
-		err = proto.ErrInvalidContentLength
+		err = rip.ErrInvalidContentLength
 	}
 	return
 }

@@ -2,7 +2,6 @@ package random
 
 import (
 	"github.com/sharpvik/rip"
-	"github.com/sharpvik/rip/proto"
 	riptcp "github.com/sharpvik/rip/tcp"
 )
 
@@ -16,11 +15,7 @@ func Client(addr string) *Service {
 	}
 }
 
-func (s *Service) RandInt() (i int, err proto.Error) {
+func (s *Service) RandInt() (i int, err rip.Error) {
 	err = s.rip.Call("RandInt").Return(&i)
 	return
-}
-
-func Server() *rip.Server {
-	return rip.Use(Proto()).Server()
 }

@@ -1,18 +1,17 @@
-package rip
+package riptcp
 
 import (
 	"net"
 
-	"github.com/sharpvik/rip/proto"
-	riptcp "github.com/sharpvik/rip/tcp"
+	"github.com/sharpvik/rip"
 )
 
 type Server struct {
-	Handler
+	rip.Handler
 	listener net.Listener
 }
 
-func NewServer(h Handler) *Server {
+func NewServer(h rip.Handler) *Server {
 	return &Server{
 		Handler: h,
 	}
@@ -30,11 +29,11 @@ func (s *Server) ListenAndServeTCP(addr string) (err error) {
 }
 
 func (s *Server) ServeTCP(conn net.Conn) (err error) {
-	req, e := riptcp.ReadRequest(conn)
+	req, e := ReadRequest(conn)
 	if e != nil {
-		return riptcp.SendResponse(conn, proto.ResponseError(e))
+		return SendResponse(conn, rip.ResponseError(e))
 	}
-	return riptcp.SendResponse(conn, s.Handle(req))
+	return SendResponse(conn, s.Handle(req))
 }
 
 func (s *Server) acceptConnectionsTCP() (err error) {

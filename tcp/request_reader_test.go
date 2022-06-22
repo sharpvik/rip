@@ -4,12 +4,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sharpvik/rip/proto"
+	"github.com/sharpvik/rip"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRequestReader(t *testing.T) {
-	input := &proto.Request{
+	input := &rip.Request{
 		Function: "greet",
 		Argument: []byte(`{"hello": "world"}`),
 	}

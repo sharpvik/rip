@@ -1,24 +1,24 @@
-package rip
+package riptcp
 
 import (
-	"github.com/sharpvik/rip/proto"
+	"github.com/sharpvik/rip"
 )
 
 type Resolver interface {
-	Handle(*proto.Request) *proto.Response
+	rip.Handler
 	Server() *Server
 }
 
 type resolver struct {
-	Handler
+	rip.Handler
 }
 
-func NewResolver(h Handler) Resolver {
+func NewResolver(h rip.Handler) Resolver {
 	return &resolver{Handler: h}
 }
 
 func Use(source interface{}) Resolver {
-	return NewResolver(NewHanlder(source))
+	return NewResolver(rip.NewHanlder(source))
 }
 
 func (r resolver) Server() *Server {

@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"io"
 
-	"github.com/sharpvik/rip/proto"
+	"github.com/sharpvik/rip"
 )
 
 type RequestReader struct {
@@ -15,10 +15,10 @@ func NewRequestReader(rd io.Reader) (r *RequestReader) {
 	return &RequestReader{bufio.NewReader(rd)}
 }
 
-func (r *RequestReader) ReadRequest() (req *proto.Request, e proto.Error) {
+func (r *RequestReader) ReadRequest() (req *rip.Request, e rip.Error) {
 	contentLength, err := readInt(r.Reader)
 	if err != nil {
-		return nil, proto.WrapError(proto.ErrBadContentLengthRead, proto.StatusBadRequest)
+		return nil, rip.WrapError(rip.ErrBadContentLengthRead, rip.StatusBadRequest)
 	}
 
 	funcNameLength, function, e := readFuncName(r.Reader)
@@ -28,13 +28,13 @@ func (r *RequestReader) ReadRequest() (req *proto.Request, e proto.Error) {
 
 	argLength, err := calculateArgLength(contentLength, funcNameLength)
 	if e != nil {
-		return nil, proto.WrapError(err, proto.StatusBadRequest)
+		return nil, rip.WrapError(err, rip.StatusBadRequest)
 	}
 
 	argument, err := readBody(r.Reader, argLength)
 	if e != nil {
-		return nil, proto.WrapError(err, proto.StatusBadRequest)
+		return nil, rip.WrapError(err, rip.StatusBadRequest)
 	}
 
-	return proto.NewRequestRaw(function, argument), nil
+	return rip.NewRequestRaw(function, argument), nil
 }

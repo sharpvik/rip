@@ -1,4 +1,4 @@
-package util
+package rip
 
 func PanicOnError(err error) {
 	if err != nil {

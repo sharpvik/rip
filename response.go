@@ -1,10 +1,8 @@
-package proto
+package rip
 
 import (
 	"bytes"
 	"encoding/json"
-
-	"github.com/sharpvik/rip/util"
 )
 
 type Response struct {
@@ -67,7 +65,7 @@ func (resp *Response) Err() Error {
 }
 
 func (resp *Response) MustUnmarshal(v interface{}) {
-	util.PanicOnError(resp.Unmarshal(v))
+	PanicOnError(resp.Unmarshal(v))
 }
 
 func (resp *Response) Unmarshal(v interface{}) Error {

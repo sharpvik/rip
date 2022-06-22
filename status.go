@@ -1,4 +1,4 @@
-package proto
+package rip
 
 // Response status constants.
 const (

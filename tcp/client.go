@@ -3,7 +3,7 @@ package riptcp
 import (
 	"net"
 
-	"github.com/sharpvik/rip/proto"
+	"github.com/sharpvik/rip"
 )
 
 type Client struct {
@@ -24,24 +24,24 @@ func (c *Client) Call(function string) *Call {
 	}
 }
 
-func (c *Client) Send(req *proto.Request) (e proto.Error) {
+func (c *Client) Send(req *rip.Request) (e rip.Error) {
 	if e = c.Connect(); e != nil {
 		return
 	}
 	return SendRequest(c.conn, req)
 }
 
-func (c *Client) Connect() (e proto.Error) {
+func (c *Client) Connect() (e rip.Error) {
 	if c.conn == nil {
 		e = c.Dial()
 	}
 	return
 }
 
-func (c *Client) Dial() (e proto.Error) {
+func (c *Client) Dial() (e rip.Error) {
 	conn, err := net.Dial("tcp", c.Addr)
 	if err != nil {
-		return proto.WrapError(err, proto.StatusConnectionError)
+		return rip.WrapError(err, rip.StatusConnectionError)
 	}
 	c.conn = conn
 	return
