@@ -5,17 +5,17 @@ import (
 	riptcp "github.com/sharpvik/rip/tcp"
 )
 
-type Service struct {
+type Client struct {
 	rip *riptcp.Client
 }
 
-func Client(addr string) *Service {
-	return &Service{
+func NewClient(addr string) *Client {
+	return &Client{
 		rip: riptcp.NewClient(addr),
 	}
 }
 
-func (s *Service) RandInt() (i int, err rip.Error) {
+func (s *Client) RandInt() (i int, err rip.Error) {
 	err = s.rip.Call("RandInt").Return(&i)
 	return
 }

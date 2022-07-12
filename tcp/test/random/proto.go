@@ -6,16 +6,16 @@ import (
 	riptcp "github.com/sharpvik/rip/tcp"
 )
 
-type actor struct{}
+type Proto struct{}
 
-func Proto() *actor {
-	return new(actor)
+func NewProto() *Proto {
+	return new(Proto)
 }
 
-func (p *actor) RandInt() int {
+func (p *Proto) RandInt() int {
 	return rand.Int()
 }
 
 func Server() *riptcp.Server {
-	return riptcp.Use(Proto()).Server()
+	return riptcp.Use(NewProto()).Server()
 }

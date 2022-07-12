@@ -20,7 +20,7 @@ func testServer(t *testing.T) {
 }
 
 func testClient(t *testing.T) {
-	i, err := random.Client(addr).RandInt()
+	i, err := random.NewClient(addr).RandInt()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, i)
 	t.Log("received random number:", i)
