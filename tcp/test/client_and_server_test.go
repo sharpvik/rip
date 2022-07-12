@@ -16,7 +16,7 @@ func TestClientAndServer(t *testing.T) {
 
 func testServer(t *testing.T) {
 	t.Log("server listening at", addr)
-	assert.NoError(t, random.Server().ListenAndServeTCP(addr))
+	assert.NoError(t, random.Server().ListenAndServe(addr))
 }
 
 func testClient(t *testing.T) {

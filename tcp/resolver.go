@@ -4,23 +4,18 @@ import (
 	"github.com/sharpvik/rip"
 )
 
-type Resolver interface {
-	rip.Handler
-	Server() *Server
-}
-
 type resolver struct {
 	rip.Handler
 }
 
-func NewResolver(h rip.Handler) Resolver {
+func NewResolver(h rip.Handler) rip.Resolver {
 	return &resolver{Handler: h}
 }
 
-func Use(source interface{}) Resolver {
+func Use(source interface{}) rip.Resolver {
 	return NewResolver(rip.NewHanlder(source))
 }
 
-func (r resolver) Server() *Server {
+func (r resolver) Server() rip.Server {
 	return NewServer(r)
 }

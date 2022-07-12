@@ -5,10 +5,6 @@ import (
 	"reflect"
 )
 
-type Handler interface {
-	Handle(*Request) *Response
-}
-
 type handler struct {
 	reflect.Value
 }

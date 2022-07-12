@@ -3,6 +3,7 @@ package random
 import (
 	"math/rand"
 
+	"github.com/sharpvik/rip"
 	riptcp "github.com/sharpvik/rip/tcp"
 )
 
@@ -16,6 +17,6 @@ func (p *Proto) RandInt() int {
 	return rand.Int()
 }
 
-func Server() *riptcp.Server {
+func Server() rip.Server {
 	return riptcp.Use(NewProto()).Server()
 }

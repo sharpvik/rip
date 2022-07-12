@@ -6,20 +6,20 @@ import (
 	"github.com/sharpvik/rip"
 )
 
-type Server struct {
+type server struct {
 	rip.Handler
 	listener net.Listener
 }
 
-func NewServer(h rip.Handler) *Server {
-	return &Server{
+func NewServer(h rip.Handler) *server {
+	return &server{
 		Handler: h,
 	}
 }
 
-// ListenAndServeTCP opens a TCP connection and handles traffic according to
-// the RIP/TCP conventions.
-func (s *Server) ListenAndServeTCP(addr string) (err error) {
+// ListenAndServe opens a TCP connection and handles traffic according to the
+// RIP/TCP conventions.
+func (s *server) ListenAndServe(addr string) (err error) {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return
@@ -28,7 +28,7 @@ func (s *Server) ListenAndServeTCP(addr string) (err error) {
 	return s.acceptConnectionsTCP()
 }
 
-func (s *Server) ServeTCP(conn net.Conn) (err error) {
+func (s *server) ServeTCP(conn net.Conn) (err error) {
 	req, e := ReadRequest(conn)
 	if e != nil {
 		return SendResponse(conn, rip.ResponseError(e))
@@ -36,7 +36,7 @@ func (s *Server) ServeTCP(conn net.Conn) (err error) {
 	return SendResponse(conn, s.Handle(req))
 }
 
-func (s *Server) acceptConnectionsTCP() (err error) {
+func (s *server) acceptConnectionsTCP() (err error) {
 	for {
 		conn, err := s.listener.Accept()
 		if err != nil {
@@ -46,7 +46,7 @@ func (s *Server) acceptConnectionsTCP() (err error) {
 	}
 }
 
-func (s *Server) handleConnectionTCP(conn net.Conn) (err error) {
+func (s *server) handleConnectionTCP(conn net.Conn) (err error) {
 	for {
 		if err = s.ServeTCP(conn); err != nil {
 			return
