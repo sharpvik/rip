@@ -12,3 +12,14 @@ type Handler interface {
 type Server interface {
 	ListenAndServe(addr string) error
 }
+
+type Client interface {
+	Call(function string) Call
+}
+
+type Call interface {
+	Arg(arg interface{}) Call
+	Response() *Response
+	Return(into interface{}) Error
+	Err() Error
+}

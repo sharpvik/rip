@@ -6,7 +6,7 @@ import (
 )
 
 type Client struct {
-	rip *riptcp.Client
+	rip rip.Client
 }
 
 func NewClient(addr string) *Client {

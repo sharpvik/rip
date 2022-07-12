@@ -4,18 +4,18 @@ import (
 	"github.com/sharpvik/rip"
 )
 
-type Call struct {
-	*Client
+type call struct {
+	*client
 	function string
 	argument interface{}
 }
 
-func (c *Call) Arg(arg interface{}) *Call {
+func (c *call) Arg(arg interface{}) rip.Call {
 	c.argument = arg
 	return c
 }
 
-func (c *Call) Response() *rip.Response {
+func (c *call) Response() *rip.Response {
 	req, e := rip.NewRequest(c.function, c.argument)
 	if e != nil {
 		return rip.ResponseError(e)
@@ -28,7 +28,7 @@ func (c *Call) Response() *rip.Response {
 
 // Return checks if response contains an error, and if it does, returns
 // that error straight away. Otherwise, it uses Unmarshal to decode response.
-func (c *Call) Return(v interface{}) rip.Error {
+func (c *call) Return(v interface{}) rip.Error {
 	resp := c.Response()
 	if e := resp.Err(); e != nil {
 		return e
@@ -37,6 +37,6 @@ func (c *Call) Return(v interface{}) rip.Error {
 }
 
 // Err ignores the return value and reports response error if present.
-func (c *Call) Err() rip.Error {
+func (c *call) Err() rip.Error {
 	return c.Response().Err()
 }
