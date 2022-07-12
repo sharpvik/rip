@@ -6,6 +6,6 @@ const (
 
 	StatusConnectionError
 	StatusBadRequest
-	StatusServiceMalfunction
+	StatusServiceFailure
 	StatusBadResponse
 )

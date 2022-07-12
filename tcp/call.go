@@ -1,38 +1,42 @@
-package rip
+package riptcp
+
+import (
+	"github.com/sharpvik/rip"
+)
 
 type call struct {
-	*Client
+	*client
 	function string
 	argument interface{}
 }
 
-func (c *call) Arg(arg interface{}) *call {
+func (c *call) Arg(arg interface{}) rip.Call {
 	c.argument = arg
 	return c
 }
 
-func (c *call) Response() *Response {
-	req, err := NewRequest(c.function, c.argument)
-	if err != nil {
-		return ResponseError(err)
+func (c *call) Response() *rip.Response {
+	req, e := rip.NewRequest(c.function, c.argument)
+	if e != nil {
+		return rip.ResponseError(e)
 	}
-	if err = c.Send(req); err != nil {
-		return ResponseError(err)
+	if e = c.Send(req); e != nil {
+		return rip.ResponseError(e)
 	}
 	return ReadResponse(c.conn)
 }
 
 // Return checks if response contains an error, and if it does, returns
 // that error straight away. Otherwise, it uses Unmarshal to decode response.
-func (c *call) Return(v interface{}) Error {
+func (c *call) Return(v interface{}) rip.Error {
 	resp := c.Response()
-	if err := resp.Err(); err != nil {
-		return err
+	if e := resp.Err(); e != nil {
+		return e
 	}
 	return resp.Unmarshal(v)
 }
 
 // Err ignores the return value and reports response error if present.
-func (c *call) Err() Error {
+func (c *call) Err() rip.Error {
 	return c.Response().Err()
 }

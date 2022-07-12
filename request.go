@@ -3,7 +3,6 @@ package rip
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 )
 
 type Request struct {
@@ -11,15 +10,19 @@ type Request struct {
 	Argument []byte
 }
 
-func NewRequest(function string, argument interface{}) (*Request, Error) {
-	arg, e := json.Marshal(argument)
-	if e != nil {
-		return nil, WrapError(e, StatusBadRequest)
+func NewRequest(function string, arg interface{}) (*Request, Error) {
+	argument, err := json.Marshal(arg)
+	if err != nil {
+		return nil, WrapError(err, StatusBadRequest)
 	}
+	return NewRequestRaw(function, argument), nil
+}
+
+func NewRequestRaw(function string, argument []byte) *Request {
 	return &Request{
 		Function: function,
-		Argument: arg,
-	}, nil
+		Argument: argument,
+	}
 }
 
 func (req *Request) String() string {
@@ -29,20 +32,4 @@ func (req *Request) String() string {
 
 func (req *Request) Bytes() []byte {
 	return []byte(req.String())
-}
-
-func (req *Request) Send(w io.Writer) (err Error) {
-	if _, e := w.Write(req.Bytes()); e != nil {
-		return WrapError(e, StatusConnectionError)
-	}
-	return
-}
-
-func ReadRequest(rd io.Reader) (req *Request, err Error) {
-	defer func() {
-		if v := recover(); v != nil {
-			err = ErrUnexpectedPanic
-		}
-	}()
-	return NewReader(rd).ReadRequest()
 }

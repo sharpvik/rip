@@ -1,9 +1,10 @@
-package rip
+package riptcp
 
 import (
 	"fmt"
 	"testing"
 
+	"github.com/sharpvik/rip"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +19,7 @@ func (i api) Greet(human *person) string {
 }
 
 func TestResolver(t *testing.T) {
-	req, err := NewRequest("Greet", person{"Viktor"})
-	assert.NoError(t, err)
-	assert.Equal(t, ResponseJSON("Hello, Viktor"), Use(new(api)).Handle(req))
+	req, e := rip.NewRequest("Greet", person{"Viktor"})
+	assert.NoError(t, e)
+	assert.Equal(t, rip.ResponseJSON("Hello, Viktor"), Use(new(api)).Handle(req))
 }
