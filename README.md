@@ -12,8 +12,8 @@ enough! REST APIs should Rest In Peace.
 With **RIP**, you can turn any Go `struct` into an API server in one line:
 
 ```go
-proto := Proto(dbConn, redisConn) // struct that serves as a proto source
-riptcp.Use(proto).Server().ListenAndServeTCP("localhost:420")
+proto := NewProto(dbConn, redisConn) // struct that serves as a proto source
+riptcp.Use(proto).Server().ListenAndServe("localhost:420")
 ```
 
 ## Examples
