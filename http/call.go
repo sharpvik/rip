@@ -1,4 +1,4 @@
-package riptcp
+package riphttp
 
 import (
 	"github.com/sharpvik/rip"
@@ -19,8 +19,11 @@ func (c *call) Response() *rip.Response {
 	if e != nil {
 		return rip.ResponseError(e)
 	}
-	if e = c.Send(req); e != nil {
-		return rip.ResponseError(e)
+
+	r, err := WriteRequest(req)
+	if err != nil {
+		return rip.ResponseError(rip.WrapError(err, rip.StatusBadRequest))
 	}
-	return ReadResponse(c.conn)
+
+	return c.client.Response(r)
 }

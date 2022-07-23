@@ -23,3 +23,15 @@ func ReadResponse(rd io.Reader) (resp *rip.Response) {
 	}()
 	return NewReader(rd).ReadResponse()
 }
+
+func SendRequest(w io.Writer, req *rip.Request) (e rip.Error) {
+	if _, err := w.Write(req.Bytes()); err != nil {
+		e = rip.WrapError(err, rip.StatusConnectionError)
+	}
+	return
+}
+
+func SendResponse(w io.Writer, resp *rip.Response) (err error) {
+	_, err = w.Write(resp.Bytes())
+	return
+}

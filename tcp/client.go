@@ -7,21 +7,21 @@ import (
 )
 
 type client struct {
-	Addr string
+	addr string
 	conn net.Conn
 }
 
 func NewClient(addr string) rip.Client {
 	return &client{
-		Addr: addr,
+		addr: addr,
 	}
 }
 
 func (c *client) Call(function string) rip.Call {
-	return &call{
+	return rip.UpgradeSimpleCall(&call{
 		client:   c,
 		function: function,
-	}
+	})
 }
 
 func (c *client) Send(req *rip.Request) (e rip.Error) {
@@ -39,7 +39,7 @@ func (c *client) Connect() (e rip.Error) {
 }
 
 func (c *client) Dial() (e rip.Error) {
-	conn, err := net.Dial("tcp", c.Addr)
+	conn, err := net.Dial("tcp", c.addr)
 	if err != nil {
 		return rip.WrapError(err, rip.StatusConnectionError)
 	}
